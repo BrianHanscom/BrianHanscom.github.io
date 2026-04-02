@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Name — Experiential Producer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100;300;400&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─── TOKENS ─────────────────────────────────────────── */
+    :root {
+      --bg:       #0A0A0A;
+      --ink:      #F0EEE9;
+      --muted:    #666460;
+      --rule:     #222220;
+      --accent:   #F0EEE9;
+      --max:      1200px;
+      --sans:     'Josefin Sans', 'Futura', 'Century Gothic', Helvetica, Arial, sans-serif;
+      --body:     Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    /* ─── RESET ──────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--body);
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.7;
+      letter-spacing: 0.01em;
+      cursor: none;
+    }
+    img { display: block; width: 100%; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ─── CUSTOM CURSOR ──────────────────────────────────── */
+    .cursor {
+      position: fixed;
+      width: 8px; height: 8px;
+      background: var(--ink);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s, background 0.2s;
+    }
+    .cursor.expand {
+      width: 32px; height: 32px;
+      background: transparent;
+      border: 1px solid var(--ink);
+    }
+
+    /* ─── NAV ────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 28px 48px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--rule);
+    }
+    .nav-name {
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 100;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--sans);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+
+    /* ─── HERO ───────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 48px 64px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-video {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      opacity: 1;
+    }
+    .hero-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(10,10,10,0);
+      z-index: 1;
+      transition: background 0.1s linear;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .hero-title {
+      font-family: var(--sans);
+      font-size: clamp(64px, 10vw, 140px);
+      font-weight: 100;
+      line-height: 1.0;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      will-change: transform, opacity;
+    }
+    .hero-title em {
+      font-style: normal;
+      font-weight: 100;
+      display: block;
+    }
+    .hero-sub {
+      max-width: 400px;
+      color: rgba(240,238,233,0.75);
+      font-size: 12px;
+      line-height: 1.9;
+      font-family: var(--body);
+      letter-spacing: 0.06em;
+      will-change: transform, opacity;
+    }
+    .hero-sub strong {
+      color: var(--ink);
+      font-weight: 400;
+    }
+
+    /* ─── SECTION BASE ───────────────────────────────────── */
+    section { padding: 120px 48px; }
+    .section-label {
+      font-family: var(--sans);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 48px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .section-label::after {
+      content: '';
+      display: block;
+      width: 48px;
+      height: 1px;
+      background: var(--rule);
+    }
+
+    /* ─── PROJECT SIDE BY SIDE ───────────────────────────── */
+    .project-sidebyside {
+      display: flex;
+      gap: 4px;
+      background: #0A0A0A;
+      height: 400px;
+    }
+    .sideby-left {
+      flex: 0 0 auto;
+      /* 720:1080 = 2:3 ratio, so at 400px height width = 267px */
+      width: calc(400px * (720 / 1080));
+      overflow: hidden;
+    }
+    .sideby-left img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease;
+    }
+    .sideby-right {
+      flex: 1;
+      overflow: hidden;
+    }
+    .sideby-right video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease;
+    }
+    .project:hover .sideby-left img,
+    .project:hover .sideby-right video {
+      transform: scale(1.03);
+    }
+
+    /* ─── WORK GRID ──────────────────────────────────────── */
+    #work { border-top: 1px solid var(--rule); }
+    .work-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 24px;
+    }
+
+    /* Each project card */
+    .project {
+      position: relative;
+      overflow: hidden;
+      background: var(--rule);
+    }
+    .project:nth-child(1) { grid-column: span 7; }
+    .project:nth-child(2) { grid-column: span 5; }
+    .project:nth-child(3) { grid-column: span 5; }
+    .project:nth-child(4) { grid-column: span 7; }
+    .project:nth-child(5) { grid-column: span 12; }
+
+    .project-img {
+      aspect-ratio: 16/10;
+      object-fit: cover;
+      transition: transform 0.6s ease, filter 0.6s ease;
+      filter: saturate(0.9);
+    }
+    .project:nth-child(5) .project-img { aspect-ratio: 21/9; }
+
+    .project:hover .project-img {
+      transform: scale(1.03);
+      filter: saturate(1.1);
+    }
+
+    .project-info {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 24px;
+      background: linear-gradient(transparent, rgba(26,25,22,0.82));
+      color: #F5F3EE;
+      transform: translateY(8px);
+      opacity: 0;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .project:hover .project-info {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .project-title {
+      font-family: var(--sans);
+      font-size: 16px;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .project-meta {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(240,238,233,0.45);
+      font-family: var(--sans);
+      font-weight: 100;
+    }
+
+    /* placeholder image treatment */
+    .project-placeholder {
+      aspect-ratio: 16/10;
+      background: #111111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      transition: transform 0.6s ease;
+    }
+    .project:nth-child(5) .project-placeholder { aspect-ratio: 21/9; }
+    .project:hover .project-placeholder { transform: scale(1.03); }
+
+    /* ─── ABOUT ──────────────────────────────────────────── */
+    #about {
+      border-top: 1px solid var(--rule);
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .about-sticky { position: sticky; top: 120px; }
+    .about-name {
+      font-family: var(--sans);
+      font-size: 42px;
+      font-weight: 100;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      line-height: 1.15;
+      margin-bottom: 24px;
+    }
+    .about-title-tag {
+      font-family: var(--sans);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .about-body p {
+      font-size: 14px;
+      line-height: 1.9;
+      color: var(--muted);
+      margin-bottom: 24px;
+      font-family: var(--body);
+      font-weight: 300;
+    }
+    .about-body p strong {
+      color: var(--ink);
+      font-weight: 400;
+    }
+    .about-body p:first-child {
+      font-family: var(--sans);
+      font-size: 20px;
+      font-weight: 100;
+      letter-spacing: 0.06em;
+      line-height: 1.6;
+      color: var(--ink);
+    }
+
+    .clients-list {
+      margin-top: 48px;
+      padding-top: 48px;
+      border-top: 1px solid var(--rule);
+    }
+    .clients-label {
+      font-family: var(--sans);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .clients-names {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 28px;
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 100;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+
+    /* ─── CES HOVER SWAP ─────────────────────────────────── */
+    .ces-swap { cursor: none; }
+    .ces-hover,
+    .ces-info-hover {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .ces-swap .ces-default,
+    .ces-swap .ces-info-default {
+      display: block;
+      opacity: 1;
+      transition: opacity 0.4s ease;
+    }
+    .ces-swap:hover .ces-default { opacity: 0; display: none; }
+    .ces-swap:hover .ces-info-default { opacity: 0; display: none; }
+    .ces-swap:hover .ces-hover { display: block; opacity: 1; }
+    .ces-swap:hover .ces-info-hover { display: block; opacity: 1; }
+
+    /* ─── CONTACT INLINE (in about) ─────────────────────── */
+    .contact-links-inline {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 4px;
+    }
+    .contact-link-inline {
+      font-family: var(--sans);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: color 0.2s;
+    }
+    .contact-link-inline:hover { color: var(--ink); }
+    .contact-link-inline::before { content: '→'; }
+    #contact {
+      border-top: 1px solid var(--rule);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .contact-headline {
+      font-family: var(--sans);
+      font-size: clamp(32px, 4.5vw, 64px);
+      font-weight: 100;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1.15;
+      max-width: 600px;
+    }
+    .contact-headline em {
+      font-style: normal;
+      font-weight: 300;
+      color: var(--muted);
+    }
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 16px;
+      padding-bottom: 8px;
+    }
+    .contact-link {
+      font-family: var(--sans);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: color 0.2s;
+    }
+    .contact-link:hover { color: var(--ink); }
+    .contact-link::before {
+      content: '→';
+      font-style: normal;
+    }
+
+    /* ─── FOOTER ─────────────────────────────────────────── */
+    footer {
+      padding: 24px 48px;
+      border-top: 1px solid var(--rule);
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 10px;
+      font-weight: 100;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    /* ─── ANIMATIONS ─────────────────────────────────────── */
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    @keyframes riseUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 24px 24px; }
+      .hero { padding: 0 24px 48px; }
+      .hero-content { grid-template-columns: 1fr; gap: 24px; }
+      section { padding: 80px 24px; }
+      .project:nth-child(n) { grid-column: span 12; }
+      #about { grid-template-columns: 1fr; gap: 48px; }
+      .about-sticky { position: static; }
+      #contact { flex-direction: column; gap: 48px; align-items: flex-start; }
+      .contact-links { align-items: flex-start; }
+      footer { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Custom cursor -->
+  <div class="cursor" id="cursor"></div>
+
+  <!-- ─── NAV ──────────────────────────────────────────── -->
+  <nav>
+    <span class="nav-name">Brian Hanscom</span>
+    <ul class="nav-links">
+      <li><a href="#work">Work</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+  </nav>
+
+  <!-- ─── HERO ─────────────────────────────────────────── -->
+  <section class="hero" id="hero">
+    <video class="hero-video" autoplay muted loop playsinline>
+      <source src="images/reel.mp4" type="video/mp4">
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-content" id="heroContent">
+      <h1 class="hero-title" id="heroTitle">
+        Brian<br>Hanscom
+      </h1>
+      <p class="hero-sub" id="heroSub">
+        Experiential Producer — Culture, Technology,<br>Fashion &amp; Beauty
+      </p>
+    </div>
+  </section>
+
+  <!-- ─── WORK ──────────────────────────────────────────── -->
+  <section id="work">
+    <div class="section-label">Selected Work</div>
+    <div class="work-grid">
+
+      <!-- Project 1 — DealBook Summit -->
+      <div class="project reveal" id="dealbook">
+        <div class="project-sidebyside">
+          <div class="sideby-left">
+            <img src="images/dealbook2.png" alt="NYT DealBook Summit">
+          </div>
+          <div class="sideby-right">
+            <video autoplay muted loop playsinline>
+              <source src="images/dealbook1.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+        <div class="project-info">
+          <div class="project-title">NYT DealBook Summit</div>
+          <div class="project-meta">Accenture Sponsorship · Experiential</div>
+        </div>
+      </div>
+
+      <!-- Project 2 — Cher Met Gala -->
+      <div class="project reveal">
+        <img class="project-img" src="images/chermetgala.jpg" alt="Cher Met Gala 2019">
+        <div class="project-info">
+          <div class="project-title">Cher — Met Gala 2019</div>
+          <div class="project-meta">Camp: Notes on Fashion · Baz Luhrmann, Artistic Director</div>
+        </div>
+      </div>
+
+      <!-- Project 3 — Accenture Cannes Lions -->
+      <div class="project reveal">
+        <img class="project-img" src="images/cannescollage.png" alt="Accenture Cannes Lions">
+        <div class="project-info">
+          <div class="project-title">Accenture Cannes Lions</div>
+          <div class="project-meta">Brand Experience · Cannes</div>
+        </div>
+      </div>
+
+      <!-- Project 4 — Accenture at CES -->
+      <div class="project reveal ces-swap">
+        <img class="project-img ces-default" src="images/ces2602.png" alt="Accenture at CES 2026">
+        <img class="project-img ces-hover" src="images/ces2501.png" alt="Accenture at CES 2025">
+        <div class="project-info ces-info-default">
+          <div class="project-title">Accenture at CES 2026</div>
+          <div class="project-meta">Brand Experience · Las Vegas</div>
+        </div>
+        <div class="project-info ces-info-hover">
+          <div class="project-title">Accenture at CES 2025</div>
+          <div class="project-meta">Brand Experience · Las Vegas</div>
+        </div>
+      </div>
+
+      <!-- Project 5 — Chanel J12 Launch -->
+      <div class="project reveal">
+        <img class="project-img" src="images/chanelj12.png" alt="Chanel J12 Launch at Sunset Beach">
+        <div class="project-info">
+          <div class="project-title">Chanel J12 Launch</div>
+          <div class="project-meta">Sunset Beach · Brand Event</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── ABOUT ─────────────────────────────────────────── -->
+  <section id="about">
+    <div class="about-sticky reveal">
+      <div class="about-name">Brian<br>Hanscom</div>
+      <div class="about-title-tag">Experiential Producer</div>
+    </div>
+    <div class="about-body reveal">
+      <p>
+        Brian is an experiential and content producer for culture, technology, fashion, and beauty brands.
+      </p>
+      <p>
+        He is currently the <strong>Executive Producer for Experiences</strong> and produces experiential creative at <strong>Accenture</strong>.
+      </p>
+
+      <div class="clients-list">
+        <div class="clients-label">Clients & Collaborators</div>
+        <div class="clients-names">
+          <span>Brand Name</span>
+          <span>Brand Name</span>
+          <span>Brand Name</span>
+          <span>Brand Name</span>
+          <span>Brand Name</span>
+          <span>Brand Name</span>
+        </div>
+      </div>
+
+      <div class="clients-list">
+        <div class="clients-label">Contact</div>
+        <div class="contact-links-inline">
+          <a class="contact-link-inline" href="/cdn-cgi/l/email-protection#4a2838232b2464222b24392925270a2d272b232664292527"><span class="__cf_email__" data-cfemail="98faeaf1f9f6b6f0f9f6ebfbf7f5d8fff5f9f1f4b6fbf7f5">[email&#160;protected]</span></a>
+          <a class="contact-link-inline" href="https://www.linkedin.com/in/brianhanscom/" target="_blank">LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ────────────────────────────────────────── -->
+  <footer>
+    <span>© 2025 Brian Hanscom</span>
+    <span>Experiential Producer</span>
+  </footer>
+
+  <script>
+    // ── Custom cursor
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top  = e.clientY + 'px';
+    });
+    document.querySelectorAll('a, .project').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('expand'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('expand'));
+    });
+
+    // ── Cinematic hero scroll: name rises up and fades out, video darkens
+    const heroTitle = document.getElementById('heroTitle');
+    const heroSub   = document.getElementById('heroSub');
+    const hero      = document.getElementById('hero');
+    const heroOverlay = document.querySelector('.hero-overlay');
+
+    window.addEventListener('scroll', () => {
+      const scrollY   = window.scrollY;
+      const heroH     = hero.offsetHeight;
+      const progress  = Math.min(scrollY / (heroH * 0.6), 1);
+
+      // Overlay darkens as you scroll (0 → 0.72 opacity)
+      const dark = progress * 0.72;
+      heroOverlay.style.background = `rgba(10,10,10,${dark})`;
+
+      // Title: moves up and fades out
+      const titleY  = progress * -120;
+      const titleO  = 1 - progress * 1.6;
+      heroTitle.style.transform = `translateY(${titleY}px)`;
+      heroTitle.style.opacity   = Math.max(titleO, 0);
+
+      // Subtitle: moves up slightly faster and fades sooner
+      const subY = progress * -80;
+      const subO = 1 - progress * 2.2;
+      heroSub.style.transform = `translateY(${subY}px)`;
+      heroSub.style.opacity   = Math.max(subO, 0);
+    });
+
+    // ── Scroll reveal for sections below hero
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+  </script>
